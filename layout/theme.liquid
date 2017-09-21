@@ -1,0 +1,766 @@
+<!doctype html>
+<!--[if lt IE 7]><html class="no-js ie6 oldie" lang="en"><![endif]-->
+<!--[if IE 7]><html class="no-js ie7 oldie" lang="en"><![endif]-->
+<!--[if IE 8]><html class="no-js ie8 oldie" lang="en"><![endif]-->
+<!--[if gt IE 8]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <link rel="shortcut icon" href="{{ 'favicon.png' | asset_url }}" type="image/png" />
+  <meta charset="utf-8">
+  <meta name="msvalidate.01" content="C8A19C03A9A823506DF57E376346526C" />
+  <!--[if IE]><meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'><![endif]-->
+  <title>{{ page_title }}{% if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif %}{% if current_page != 1 %} &ndash; Page {{ current_page }}{% endif %}{% unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless %}</title>
+  {% if page_description %}
+  <meta name="description" content="{{ page_description | escape }}" />
+  {% endif %}<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="canonical" href="{{ canonical_url }}" /> 
+  <!-- Critical Css -->
+  <style>
+  /* Need */
+  </style>
+  {% include 'fb-open-graph-tags' %}
+  {% include 'twitter-cards' %}
+  
+<!-- Global Site Tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-87284925-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments)};
+  gtag('js', new Date());
+
+  gtag('config', 'UA-87284925-1');
+</script>
+
+  <!-- Async CSS Load -->  
+  <script type="text/javascript">
+  /*! loadCSS: load a CSS file asynchronously. [c]2016 @scottjehl, Filament Group, Inc. Licensed MIT */
+  (function(w){
+  	"use strict";
+  	/* exported loadCSS */
+  	var loadCSS = function( href, before, media ){
+  		// Arguments explained:
+  		// `href` [REQUIRED] is the URL for your CSS file.
+  		// `before` [OPTIONAL] is the element the script should use as a reference for injecting our stylesheet <link> before
+  			// By default, loadCSS attempts to inject the link after the last stylesheet or script in the DOM. However, you might desire a more specific location in your document.
+  		// `media` [OPTIONAL] is the media type or query of the stylesheet. By default it will be 'all'
+  		var doc = w.document;
+  		var ss = doc.createElement( "link" );
+  		var ref;
+  		if( before ){
+  			ref = before;
+  		}
+  		else {
+  			var refs = ( doc.body || doc.getElementsByTagName( "head" )[ 0 ] ).childNodes;
+  			ref = refs[ refs.length - 1];
+  		}
+
+  		var sheets = doc.styleSheets;
+  		ss.rel = "stylesheet";
+  		ss.href = href;
+  		// temporarily set media to something inapplicable to ensure it'll fetch without blocking render
+  		ss.media = "only x";
+
+  		// wait until body is defined before injecting link. This ensures a non-blocking load in IE11.
+  		function ready( cb ){
+  			if( doc.body ){
+  				return cb();
+  			}
+  			setTimeout(function(){
+  				ready( cb );
+  			});
+  		}
+  		// Inject link
+  			// Note: the ternary preserves the existing behavior of "before" argument, but we could choose to change the argument to "after" in a later release and standardize on ref.nextSibling for all refs
+  			// Note: `insertBefore` is used instead of `appendChild`, for safety re: http://www.paulirish.com/2011/surefire-dom-element-insertion/
+  		ready( function(){
+  			ref.parentNode.insertBefore( ss, ( before ? ref : ref.nextSibling ) );
+  		});
+  		// A method (exposed on return object for external use) that mimics onload by polling document.styleSheets until it includes the new sheet.
+  		var onloadcssdefined = function( cb ){
+  			var resolvedHref = ss.href;
+  			var i = sheets.length;
+  			while( i-- ){
+  				if( sheets[ i ].href === resolvedHref ){
+  					return cb();
+  				}
+  			}
+  			setTimeout(function() {
+  				onloadcssdefined( cb );
+  			});
+  		};
+
+  		function loadCB(){
+  			if( ss.addEventListener ){
+  				ss.removeEventListener( "load", loadCB );
+  			}
+  			ss.media = media || "all";
+  		}
+
+  		// once loaded, set link's media back to `all` so that the stylesheet applies once it loads
+  		if( ss.addEventListener ){
+  			ss.addEventListener( "load", loadCB);
+  		}
+  		ss.onloadcssdefined = onloadcssdefined;
+  		onloadcssdefined( loadCB );
+  		return ss;
+  	};
+  	// commonjs
+  	if( typeof exports !== "undefined" ){
+  		exports.loadCSS = loadCSS;
+  	}
+  	else {
+  		w.loadCSS = loadCSS;
+  	}
+  }( typeof global !== "undefined" ? global : this ));
+  
+  /*! CSS rel=preload polyfill. Depends on loadCSS function. [c]2016 @scottjehl, Filament Group, Inc. Licensed MIT  */
+  (function( w ){
+    // rel=preload support test
+    if( !w.loadCSS ){
+      return;
+    }
+    var rp = loadCSS.relpreload = {};
+    rp.support = function(){
+      try {
+        return w.document.createElement( "link" ).relList.supports( "preload" );
+      } catch (e) {
+        return false;
+      }
+    };
+
+    // loop preload links and fetch using loadCSS
+    rp.poly = function(){
+      var links = w.document.getElementsByTagName( "link" );
+      for( var i = 0; i < links.length; i++ ){
+        var link = links[ i ];
+        if( link.rel === "preload" && link.getAttribute( "as" ) === "style" ){
+          w.loadCSS( link.href, link );
+          link.rel = null;
+        }
+      }
+    };
+
+    // if link[rel=preload] is not supported, we must fetch the CSS manually using loadCSS
+    if( !rp.support() ){
+      rp.poly();
+      var run = w.setInterval( rp.poly, 300 );
+      if( w.addEventListener ){
+        w.addEventListener( "load", function(){
+          w.clearInterval( run );
+        } );
+      }
+      if( w.attachEvent ){
+        w.attachEvent( "onload", function(){
+          w.clearInterval( run );
+        } )
+      }
+    }
+  }( this ));
+  </script>
+  
+  <!-- Remove Preload to See if Isssue is Fixed -->
+
+  {% comment %}
+  <link rel="preload" href="{{'styles.scss.css' | asset_url}}" as="style" onload="this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="{{'styles.scss.css' | asset_url}}"></noscript>
+  
+  <link rel="preload" href="{{'social/social-icons.css' | global_asset_url}}" as="style" onload="this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="{{'social/social-icons.css' | global_asset_url}}"></noscript>
+  
+  <link rel="preload" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" as="style" onload="this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css"></noscript>
+  
+  <link rel="preload" href="https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700%7CLato:400,700%7CCrimson+Text:400,600" as="style" onload="this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700%7CLato:400,700%7CCrimson+Text:400,600"></noscript>
+  {% endcomment %}
+  
+  
+  {{ 'styles.scss.css' | asset_url | stylesheet_tag }}
+  {{ 'social/social-icons.css' | global_asset_url | stylesheet_tag }}
+  {{ '//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css' | stylesheet_tag }}
+  <link href='https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700%7CRoboto:400,700%7CRoboto+Slab:400,700' rel='stylesheet' type='text/css'>
+  
+  
+  {% if settings.google_header_font != "none" %}
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family={{ settings.google_header_font }}:300,400,700">
+  {% endif %}
+  {% if settings.google_nav_font != "none" %}
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family={{ settings.google_nav_font }}:300,400,700">
+  {% endif %}
+  
+  {{ 'bold.css' | asset_url | stylesheet_tag }}
+  
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+  <script src="//code.jquery.com/jquery-migrate-1.4.1.js"></script>
+  
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  
+  {% include 'bold-product' with product, hide_action: 'header' %}
+  <meta name="google-site-verification" content="i5ytDD-fu7DSMsaswMGp2lB6WqW_s0CFNmRT3U-YnTw" />
+</head>
+<body>
+  <!-- Begin toolbar -->
+  <div class="toolbar-wrapper">
+    <div class="toolbar-overlay"></div>
+    <div class="toolbar clearfix">
+      <div class="free-shipping-wrapper">
+        <div class="free-shipping-tag">
+          <span class="fa fa-truck"></span>Free Shipping On All Orders!
+        </div>
+      </div>
+      <ul class="unstyled clearfix">
+        <li class="search-field fr">
+          <form class="search" action="/search">
+            <button type="submit" class="go"><i class="fa fa-search"></i></button>
+            <input type="text" name="q" class="search_box" placeholder="Search" value="{{ search.terms }}" />
+          </form>
+        </li>
+        {% if cart.item_count != 0 %}
+        <!--li id="checkout-link" class="fr"><a href="/cart" class="btn" title="Checkout">Checkout</a></li-->
+        {% endif %}
+        <li class="fr">
+          <a href="/cart" class="cart-link" title="Shopping Cart"><i class="fa fa-shopping-cart"></i><strong>Cart</strong>( {{ cart.item_count }} )</a>
+        </li>
+        {% include 'top-nav' %}
+        <li class="fr">
+          {% if customer  %}
+              <a href="/account" class="text-brown">Your Account</a>  |  {{ 'Logout' | customer_logout_link }}
+            {% else %}
+              {{ 'Login' | customer_login_link }}
+              {% if shop.customer_accounts_optional %}
+                <span>&nbsp;/&nbsp;</span>
+                {{ 'Register' | customer_register_link }}
+              {% endif %}
+            {% endif %}
+        </li>
+        <li>
+          <a href="https://cdn.shopify.com/s/files/1/1529/9669/t/5/assets/productRequest_v2.pdf" class="product-request-link fr" target="_blank">Product Request Form</a>
+        </li>
+
+        {% if settings.top_bar_linklist != blank %}
+        {% for link in linklists[settings.top_bar_linklist].links %}
+        <li class="fr">
+          <a href="{{ link.url }}" title="{{ link.title }}">{{ link.title }}</a>
+        </li>
+        {% endfor %}
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+  <!-- End toolbar -->
+  <!-- Begin Main Nav -->
+  <div class="mainnav-wrapper">
+    <!-- Begin right navigation -->
+    {% if settings.navigation_alignment == "right" %}
+    <div class="row mainnav clearfix" id="header">
+      <div>
+        <div class="inner-left logo-wrapper">
+          <div class="logo">
+            <a href="/"><img src="{{ 'logo.svg' | asset_url }}" alt="{{ shop.name }}" /></a>
+            {% if template == 'index' %}
+            <h1 style="display:none"><a href="/">{{ shop.name }}</a></h1>
+            {% endif %}
+          </div> 
+        </div>        
+        <a href="/cart" class="mobile-cart" title="Shopping Cart"><i class="fa fa-shopping-cart"></i><strong>Cart</strong>( {{ cart.item_count }} )</a>
+        <div id="menu-button" class="menu-icon">Menu<i class="fa fa-bars"></i></div>   
+        <div id="nav" class="clearfix">
+          <div class="inner-right fr">
+            <nav class="main clearfix">
+              {% include 'site-nav' %}
+            </nav> 
+          </div> 
+        </div> 
+      </div> 
+    </div> 
+    {% endif %}
+    <!-- End right navigation -->
+  </div>
+  <!-- End Main Nav -->
+  <!-- Begin Mobile Nav -->
+  <div class="row mobile-wrapper">
+    <nav class="mobile clearfix">
+      {% include 'mobile-menu' %}
+    </nav>
+  </div>
+  <!-- End Mobile Nav -->
+  {% if template == 'index' %}
+  <!-- Begin slider -->
+  <div class="flexslider-container">
+    <div class="flexslider">
+      <ul class="slides">
+        <li style="background-image: url({{ 'homeBanner_3.jpg' | asset_url }}); background-position: top center; display: none;">
+          <div class="caption-wrapper">
+            <div class="caption">
+              <p>Improve Gut, Joint, And Skin Health</p>
+              <h2>Premium Bone Broth</h2>
+              <h3>Made With Fresh, Organic Ingredients</h3>
+              <a href="/collections/premium-bone-broth" class="btn">Order Now</a>
+            </div>
+          </div>
+        </li>
+      </ul>
+      <div class="flex-controls clearfix"></div>
+    </div>
+  </div>
+  <!-- End slider -->
+  <div class="banner-bar">
+    <a href="/pages/subscriptions">With a monthly subscription <span class="highlight-small">save up to 20%</span> on each order<span>Save Now</span>
+    </a>
+  </div>
+  {% endif %}
+  
+  <!-- Begin wrapper -->
+  <div id="transparency" class="wrapper">
+    <div class="row">      
+      <!-- Begin below navigation -->
+      {% if settings.navigation_alignment == "below" %}
+      <div class="span12 clearfix">
+        <div class="logo">
+          {% if settings.use_logo %}
+          <a href="/"><img src="{{ 'logo.png' | asset_url }}" alt="{{ shop.name }}" /></a>
+          {% if template == 'index' %}
+          <h1 style="display:none"><a href="/">{{ shop.name }}</a></h1>
+          {% endif %}
+          {% else %}
+          <h1><a href="/">{{ shop.name }}</a></h1>
+          {% endif %}
+        </div> 
+      </div> 
+      <div id="nav" class="row">
+        <div class="span12">
+          <nav class="main">
+            {% include 'site-nav' %}
+          </nav> <!-- /.main -->
+          <nav class="mobile clearfix">
+            {% include 'mobile-menu' %}
+          </nav> <!-- /.mobile --> 
+        </div> 
+      </div> 
+      {% endif %}
+      <!-- End below navigation -->
+      <!-- Begin content-->
+      <section id="content" class="clearfix">
+        {{ content_for_layout }}
+      </section>
+      <!-- End content-->
+    </div>
+  </div>
+  <!-- End wrapper -->
+  {% if template == 'index' %}
+  <div class="banner-bar orange-bkgd">
+    <p>Quick Shop</p>
+  </div>
+  <div id="transparency" class="wrapper">
+    <div class="row">
+      <div class="three-block-container quick clearfix">
+        <div class="span4 homepage-seasonal with-featured-tag">
+          <a href='/collections/premium-bone-broth/products/bison-broth'>
+            <div class="image-container">
+              <img src="{{ 'home-BisonPKG.jpg' | asset_url }}" class="image" alt="Erie Bone Broth Subscription" />
+            </div>
+            <h2 class="product-title">Bison Bone Broth</h2>
+            <p class="product-description">6 Pack - $94.99</p>
+            <div class="btn">Buy Now</div>
+          </a>
+        </div>
+        <div class="span4">
+          <a href='/collections/premium-bone-broth/products/chicken-broth'>
+            <div class="image-container">
+              <img src="{{ 'home-ChickenPKG.jpg' | asset_url }}" class="image" alt="Erie Bone Broth Subscription" />
+            </div>
+            <h2 class="product-title">Chicken Bone Broth</h2>
+            <p class="product-description">6 Pack - $94.99</p>
+            <div class="btn">Buy Now</div>
+          </a>
+        </div>
+        <div class="span4 last">
+          <a href='/collections/combos-and-deals/products/8-pouch-mix-n-match'>
+            <div class="image-container">
+              <img src="{{ 'home-product_8pack.jpg' | asset_url }}" class="image" alt="Health Benefits of Erie Bone Broth" />
+            </div>
+            <h2 class="product-title">8 Pouch Mix n Match</h2>
+            <p class="product-description">$114.99 - Try each of our delicious flavors</p>
+            <div class="btn pt10">Buy Now</div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="flexslider-container">
+    <div class="flexslider">
+      <ul class="slides">
+        <li style="background-image: url({{ 'homeBanner_2.jpg' | asset_url }}); background-position: top center; display: none;">
+          <div class="caption-wrapper darker">
+            <div class="caption smaller">
+              <p>Free of Antibiotics and Hormones</p>
+              <h2>All Bones Are From Animals On Organic Farms</h2>
+              <h3>Humanely Raised on Pastures With Clean Non-GMO Diets</h3>
+              <a href="/collections/premium-bone-broth" class="btn blue-bkgd">Buy Healing Bone Broth</a>
+            </div>
+          </div>
+        </li>
+      </ul>
+      <div class="flex-controls clearfix"></div>
+    </div>
+  </div>
+  <!-- End slider -->
+  {% endif %}  
+  <!-- Begin Frozen Food Section -->
+  <div class="banner-bar green-bkgd">
+    <p>Look for us in the Frozen Food Section</p>
+  </div>
+  <!-- End Frozen -->
+  <!-- Begin slider -->
+  <div class="flexslider-container">
+    <div class="flexslider">
+      <ul class="slides">
+        <li style="background-image: url({{ 'homeBanner_4.jpg' | asset_url }}); background-position: center center; display: none;">
+        </li>
+      </ul>
+      <div class="flex-controls clearfix"></div>
+    </div>
+  </div>
+  <!-- End slider -->
+  <!-- Begin newsletter -->
+  <div class="newsletter-wrapper">
+    <div class="newsletter-overlay"></div>
+    <div id="newsletter">
+      <h3>Save 10% On Your First Order</h3>
+      <p>WHEN YOU JOIN OUR NEWSLETTER</p>
+      
+      <!-- Begin MailChimp Signup Form -->
+      <div id="mc_embed_signup">
+        <form action="//myshopify.us14.list-manage.com/subscribe/post?u=8683b75d31d88bb18f7285961&amp;id=9578b0e6d0" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+          <div id="mc_embed_signup_scroll">
+        <div class="mc-field-group">
+          <input type="email" value="" name="EMAIL" placeholder="Email" class="required email" id="mce-EMAIL" />
+          <input type="submit" value="Sign Up" name="subscribe" id="mc-embedded-subscribe" class="btn newsletter" />
+        </div>
+          <div id="mce-responses" class="clear">
+            <div class="response" id="mce-error-response" style="display:none"></div>
+            <div class="response" id="mce-success-response" style="display:none"></div>
+          </div>    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+      <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_8683b75d31d88bb18f7285961_9578b0e6d0" tabindex="-1" value=""></div>
+          </div>
+        </form>
+      </div>
+      
+      <p class="exclude">*Excludes Subscription Orders</p>
+      <!-- End mc_embed_signup -->
+      <!-- form action="{{ settings.mailing_list_form_action }}" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" target="_blank">
+        <input type="email" value="" placeholder="Email Address" name="EMAIL" id="mail" />
+        <input type="submit" class="btn newsletter" value="Sign Up" name="subscribe" id="subscribe" />
+      </form -->
+    </div>    
+  </div>
+  <!-- End newsletter -->
+  <div class="banner-bar">
+    <a href="/collections/premium-bone-broth">Free Shipping On All Orders!</a>
+  </div>
+  <!-- Begin footer -->
+  <div class="footer-wrapper">
+    <div class="footer-overlay"></div>
+    <footer>
+      <div class="row">
+        <!--div class="span12 full-border"></div-->
+        {% assign blog_module_in_footer = false %}
+        <!-- Begin latest blog post -->
+        {% unless settings.footer_blog_post == blank or blogs[settings.footer_blog_post].empty? or blogs[settings.footer_blog_post].articles.size == 0 %}
+        {% assign article = blogs[settings.footer_blog_post].articles.first %}
+        {% assign blog_module_in_footer = true %}
+        <div class="span4">
+          <div class="p30">
+            <h4><a href="/blogs/{{ settings.footer_blog_post }}">{{ settings.footer_blog_post_header }}</a></h4>
+            <p class="p10"><strong>{{ article.title | link_to: article.url }}</strong></p>
+            <p>{{ article.content | strip_html | truncatewords: 30 }}</p>
+          </div>
+        </div>
+        {% endunless %}
+        <!-- End latest blog post -->
+        <!-- Begin footer navigation left -->
+        <div class="span12 footer-menu">
+          <!--h4>{{ settings.footer_linklist_title }}</h4-->
+          <ul class="unstyled">
+          {% for link in linklists.footer.links %}
+            <li><a href="{{ link.url }}" title="{{ link.title }}">{{ link.title }}</a></li>
+          {% endfor %}
+          </ul>
+        </div>
+        <!-- End footer navigation left -->
+        <!-- Begin footer navigation left -->
+        <div class="span3 footer-menu right">
+          <!--h4>{{ settings.footer_linklist_title }}</h4-->
+          <ul class="unstyled">
+          {% for link in linklists.footer-right.links %}
+            <li><a href="{{ link.url }}" title="{{ link.title }}">{{ link.title }}</a></li>
+          {% endfor %}
+          </ul>
+        </div>
+        <!-- End footer navigation left -->
+        {% unless blog_module_in_footer %}
+        <div class="span12 tc">          
+          <div class="clearfix">
+            <a href="/"><img class="footer-logo" src="{{ 'logo.svg' | asset_url }}" alt="{{ shop.name }}" /></a>
+            <p class="copyright">Copyright &copy; {{ 'now' | date: "%Y" }} {{ shop.name }}, LLC<a href="https://www.facebook.com/eriebonebroth" target="_blank" class="shopify-social-icon-facebook-circle fa"></a></p>
+          </div>
+        </div>
+        {% endunless %}
+        <!-- Begin copyright -->
+        <div class="span12 tc">
+          {% if shop.enabled_payment_types.size > 0 %}
+          <ul class="credit-cards clearfix">
+            {% for type in shop.enabled_payment_types %}
+            <li><img width="50" src="{{ type | payment_type_img_url }}" alt="credit card accepted" /></li>
+            {% endfor %}
+          </ul> <!-- /.credit-cards -->
+          {% endif %}  
+          <p><a href="/pages/privacy-policy">Privacy Policy</a></p>
+        </div>
+        <!-- End copyright -->
+      </div> 
+    </footer>
+  </div>
+  <!-- End footer -->
+  
+  {% comment %}
+  {{ 'html5shiv.js' | asset_url | script_tag }}
+  {% endcomment %}
+  {{ content_for_header }}
+{% comment %} BOLD-PRODUCT LIGHT VERSION {% endcomment %}
+{% include 'bold-product' with product, hide_action: 'header' %}
+
+
+  {% include 'bold-common' %}
+
+  <!--script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script-->  
+ 
+  {% comment %}
+  {{ 'jquery.min.js' | asset_url | script_tag }}
+  {% endcomment %}
+
+  
+  <script type="text/javascript" async src="{{ 'option_selection.js' | shopify_asset_url }}"></script>
+  <script type="text/javascript" async src="{{ 'api.jquery.js' | shopify_asset_url }}"></script>
+  {% if template contains 'customers' %}
+  <script type="text/javascript" async src="{{ 'shopify_common.js' | shopify_asset_url }}"></script>
+  <script type="text/javascript" async src="{{ 'customer_area.js' | shopify_asset_url }}"></script>
+  {% endif %}
+  {% if settings.display_slideshow %}
+  <script type="text/javascript">
+ /*
+  * jQuery FlexSlider v1.8
+  * http://www.woothemes.com/flexslider/
+  *
+  * Copyright 2012 WooThemes
+  * Free to use under the MIT license.
+  * http://www.opensource.org/licenses/mit-license.php
+  *
+  * Contrib: Darin Richardson
+  */
+ (function(a){a.flexslider=function(c,b){var d=c;d.init=function(){d.vars=a.extend({},a.flexslider.defaults,b);d.data("flexslider",true);d.container=a(".slides",d).first();d.slides=a(".slides:first > li",d);d.count=d.slides.length;d.animating=false;d.currentSlide=d.vars.slideToStart;d.animatingTo=d.currentSlide;d.atEnd=(d.currentSlide==0)?true:false;d.eventType=("ontouchstart" in document.documentElement)?"touchstart":"click";d.cloneCount=0;d.cloneOffset=0;d.manualPause=false;d.vertical=(d.vars.slideDirection=="vertical");d.prop=(d.vertical)?"top":"marginLeft";d.args={};d.transitions="webkitTransition" in document.body.style;if(d.transitions){d.prop="-webkit-transform"}if(d.vars.controlsContainer!=""){d.controlsContainer=a(d.vars.controlsContainer).eq(a(".slides").index(d.container));d.containerExists=d.controlsContainer.length>0}if(d.vars.manualControls!=""){d.manualControls=a(d.vars.manualControls,((d.containerExists)?d.controlsContainer:d));d.manualExists=d.manualControls.length>0}if(d.vars.randomize){d.slides.sort(function(){return(Math.round(Math.random())-0.5)});d.container.empty().append(d.slides)}if(d.vars.animation.toLowerCase()=="slide"){if(d.transitions){d.setTransition(0)}d.css({overflow:"hidden"});if(d.vars.animationLoop){d.cloneCount=2;d.cloneOffset=1;d.container.append(d.slides.filter(":first").clone().addClass("clone")).prepend(d.slides.filter(":last").clone().addClass("clone"))}d.newSlides=a(".slides:first > li",d);var m=(-1*(d.currentSlide+d.cloneOffset));if(d.vertical){d.newSlides.css({display:"block",width:"100%","float":"left"});d.container.height((d.count+d.cloneCount)*200+"%").css("position","absolute").width("100%");setTimeout(function(){d.css({position:"relative"}).height(d.slides.filter(":first").height());d.args[d.prop]=(d.transitions)?"translate3d(0,"+m*d.height()+"px,0)":m*d.height()+"px";d.container.css(d.args)},100)}else{d.args[d.prop]=(d.transitions)?"translate3d("+m*d.width()+"px,0,0)":m*d.width()+"px";d.container.width((d.count+d.cloneCount)*200+"%").css(d.args);setTimeout(function(){d.newSlides.width(d.width()).css({"float":"left",display:"block"})},100)}}else{d.transitions=false;d.slides.css({width:"100%","float":"left",marginRight:"-100%"}).eq(d.currentSlide).fadeIn(d.vars.animationDuration)}if(d.vars.controlNav){if(d.manualExists){d.controlNav=d.manualControls}else{var e=a('<ol class="flex-control-nav"></ol>');var s=1;for(var t=0;t<d.count;t++){e.append("<li><a>"+s+"</a></li>");s++}if(d.containerExists){a(d.controlsContainer).append(e);d.controlNav=a(".flex-control-nav li a",d.controlsContainer)}else{d.append(e);d.controlNav=a(".flex-control-nav li a",d)}}d.controlNav.eq(d.currentSlide).addClass("active");d.controlNav.bind(d.eventType,function(i){i.preventDefault();if(!a(this).hasClass("active")){(d.controlNav.index(a(this))>d.currentSlide)?d.direction="next":d.direction="prev";d.flexAnimate(d.controlNav.index(a(this)),d.vars.pauseOnAction)}})}if(d.vars.directionNav){var v=a('<ul class="flex-direction-nav"><li><a class="prev" href="#">'+d.vars.prevText+'</a></li><li><a class="next" href="#">'+d.vars.nextText+"</a></li></ul>");if(d.containerExists){a(d.controlsContainer).append(v);d.directionNav=a(".flex-direction-nav li a",d.controlsContainer)}else{d.append(v);d.directionNav=a(".flex-direction-nav li a",d)}if(!d.vars.animationLoop){if(d.currentSlide==0){d.directionNav.filter(".prev").addClass("disabled")}else{if(d.currentSlide==d.count-1){d.directionNav.filter(".next").addClass("disabled")}}}d.directionNav.bind(d.eventType,function(i){i.preventDefault();var j=(a(this).hasClass("next"))?d.getTarget("next"):d.getTarget("prev");if(d.canAdvance(j)){d.flexAnimate(j,d.vars.pauseOnAction)}})}if(d.vars.keyboardNav&&a("ul.slides").length==1){function h(i){if(d.animating){return}else{if(i.keyCode!=39&&i.keyCode!=37){return}else{if(i.keyCode==39){var j=d.getTarget("next")}else{if(i.keyCode==37){var j=d.getTarget("prev")}}if(d.canAdvance(j)){d.flexAnimate(j,d.vars.pauseOnAction)}}}}a(document).bind("keyup",h)}if(d.vars.mousewheel){d.mousewheelEvent=(/Firefox/i.test(navigator.userAgent))?"DOMMouseScroll":"mousewheel";d.bind(d.mousewheelEvent,function(y){y.preventDefault();y=y?y:window.event;var i=y.detail?y.detail*-1:y.wheelDelta/40,j=(i<0)?d.getTarget("next"):d.getTarget("prev");if(d.canAdvance(j)){d.flexAnimate(j,d.vars.pauseOnAction)}})}if(d.vars.slideshow){if(d.vars.pauseOnHover&&d.vars.slideshow){d.hover(function(){d.pause()},function(){if(!d.manualPause){d.resume()}})}d.animatedSlides=setInterval(d.animateSlides,d.vars.slideshowSpeed)}if(d.vars.pausePlay){var q=a('<div class="flex-pauseplay"><span></span></div>');if(d.containerExists){d.controlsContainer.append(q);d.pausePlay=a(".flex-pauseplay span",d.controlsContainer)}else{d.append(q);d.pausePlay=a(".flex-pauseplay span",d)}var n=(d.vars.slideshow)?"pause":"play";d.pausePlay.addClass(n).text((n=="pause")?d.vars.pauseText:d.vars.playText);d.pausePlay.bind(d.eventType,function(i){i.preventDefault();if(a(this).hasClass("pause")){d.pause();d.manualPause=true}else{d.resume();d.manualPause=false}})}if("ontouchstart" in document.documentElement){var w,u,l,r,o,x,p=false;d.each(function(){if("ontouchstart" in document.documentElement){this.addEventListener("touchstart",g,false)}});function g(i){if(d.animating){i.preventDefault()}else{if(i.touches.length==1){d.pause();r=(d.vertical)?d.height():d.width();x=Number(new Date());l=(d.vertical)?(d.currentSlide+d.cloneOffset)*d.height():(d.currentSlide+d.cloneOffset)*d.width();w=(d.vertical)?i.touches[0].pageY:i.touches[0].pageX;u=(d.vertical)?i.touches[0].pageX:i.touches[0].pageY;d.setTransition(0);this.addEventListener("touchmove",k,false);this.addEventListener("touchend",f,false)}}}function k(i){o=(d.vertical)?w-i.touches[0].pageY:w-i.touches[0].pageX;p=(d.vertical)?(Math.abs(o)<Math.abs(i.touches[0].pageX-u)):(Math.abs(o)<Math.abs(i.touches[0].pageY-u));if(!p){i.preventDefault();if(d.vars.animation=="slide"&&d.transitions){if(!d.vars.animationLoop){o=o/((d.currentSlide==0&&o<0||d.currentSlide==d.count-1&&o>0)?(Math.abs(o)/r+2):1)}d.args[d.prop]=(d.vertical)?"translate3d(0,"+(-l-o)+"px,0)":"translate3d("+(-l-o)+"px,0,0)";d.container.css(d.args)}}}function f(j){d.animating=false;if(d.animatingTo==d.currentSlide&&!p&&!(o==null)){var i=(o>0)?d.getTarget("next"):d.getTarget("prev");if(d.canAdvance(i)&&Number(new Date())-x<550&&Math.abs(o)>20||Math.abs(o)>r/2){d.flexAnimate(i,d.vars.pauseOnAction)}else{d.flexAnimate(d.currentSlide,d.vars.pauseOnAction)}}this.removeEventListener("touchmove",k,false);this.removeEventListener("touchend",f,false);w=null;u=null;o=null;l=null}}if(d.vars.animation.toLowerCase()=="slide"){a(window).resize(function(){if(!d.animating){if(d.vertical){d.height(d.slides.filter(":first").height());d.args[d.prop]=(-1*(d.currentSlide+d.cloneOffset))*d.slides.filter(":first").height()+"px";if(d.transitions){d.setTransition(0);d.args[d.prop]=(d.vertical)?"translate3d(0,"+d.args[d.prop]+",0)":"translate3d("+d.args[d.prop]+",0,0)"}d.container.css(d.args)}else{d.newSlides.width(d.width());d.args[d.prop]=(-1*(d.currentSlide+d.cloneOffset))*d.width()+"px";if(d.transitions){d.setTransition(0);d.args[d.prop]=(d.vertical)?"translate3d(0,"+d.args[d.prop]+",0)":"translate3d("+d.args[d.prop]+",0,0)"}d.container.css(d.args)}}})}d.vars.start(d)};d.flexAnimate=function(g,f){if(!d.animating){d.animating=true;d.animatingTo=g;d.vars.before(d);if(f){d.pause()}if(d.vars.controlNav){d.controlNav.removeClass("active").eq(g).addClass("active")}d.atEnd=(g==0||g==d.count-1)?true:false;if(!d.vars.animationLoop&&d.vars.directionNav){if(g==0){d.directionNav.removeClass("disabled").filter(".prev").addClass("disabled")}else{if(g==d.count-1){d.directionNav.removeClass("disabled").filter(".next").addClass("disabled")}else{d.directionNav.removeClass("disabled")}}}if(!d.vars.animationLoop&&g==d.count-1){d.pause();d.vars.end(d)}if(d.vars.animation.toLowerCase()=="slide"){var e=(d.vertical)?d.slides.filter(":first").height():d.slides.filter(":first").width();if(d.currentSlide==0&&g==d.count-1&&d.vars.animationLoop&&d.direction!="next"){d.slideString="0px"}else{if(d.currentSlide==d.count-1&&g==0&&d.vars.animationLoop&&d.direction!="prev"){d.slideString=(-1*(d.count+1))*e+"px"}else{d.slideString=(-1*(g+d.cloneOffset))*e+"px"}}d.args[d.prop]=d.slideString;if(d.transitions){d.setTransition(d.vars.animationDuration);d.args[d.prop]=(d.vertical)?"translate3d(0,"+d.slideString+",0)":"translate3d("+d.slideString+",0,0)";d.container.css(d.args).one("webkitTransitionEnd transitionend",function(){d.wrapup(e)})}else{d.container.animate(d.args,d.vars.animationDuration,function(){d.wrapup(e)})}}else{d.slides.eq(d.currentSlide).fadeOut(d.vars.animationDuration);d.slides.eq(g).fadeIn(d.vars.animationDuration,function(){d.wrapup()})}}};d.wrapup=function(e){if(d.vars.animation=="slide"){if(d.currentSlide==0&&d.animatingTo==d.count-1&&d.vars.animationLoop){d.args[d.prop]=(-1*d.count)*e+"px";if(d.transitions){d.setTransition(0);d.args[d.prop]=(d.vertical)?"translate3d(0,"+d.args[d.prop]+",0)":"translate3d("+d.args[d.prop]+",0,0)"}d.container.css(d.args)}else{if(d.currentSlide==d.count-1&&d.animatingTo==0&&d.vars.animationLoop){d.args[d.prop]=-1*e+"px";if(d.transitions){d.setTransition(0);d.args[d.prop]=(d.vertical)?"translate3d(0,"+d.args[d.prop]+",0)":"translate3d("+d.args[d.prop]+",0,0)"}d.container.css(d.args)}}}d.animating=false;d.currentSlide=d.animatingTo;d.vars.after(d)};d.animateSlides=function(){if(!d.animating){d.flexAnimate(d.getTarget("next"))}};d.pause=function(){clearInterval(d.animatedSlides);if(d.vars.pausePlay){d.pausePlay.removeClass("pause").addClass("play").text(d.vars.playText)}};d.resume=function(){d.animatedSlides=setInterval(d.animateSlides,d.vars.slideshowSpeed);if(d.vars.pausePlay){d.pausePlay.removeClass("play").addClass("pause").text(d.vars.pauseText)}};d.canAdvance=function(e){if(!d.vars.animationLoop&&d.atEnd){if(d.currentSlide==0&&e==d.count-1&&d.direction!="next"){return false}else{if(d.currentSlide==d.count-1&&e==0&&d.direction=="next"){return false}else{return true}}}else{return true}};d.getTarget=function(e){d.direction=e;if(e=="next"){return(d.currentSlide==d.count-1)?0:d.currentSlide+1}else{return(d.currentSlide==0)?d.count-1:d.currentSlide-1}};d.setTransition=function(e){d.container.css({"-webkit-transition-duration":(e/1000)+"s"})};d.init()};a.flexslider.defaults={animation:"fade",slideDirection:"horizontal",slideshow:true,slideshowSpeed:7000,animationDuration:600,directionNav:true,controlNav:true,keyboardNav:true,mousewheel:false,prevText:"Previous",nextText:"Next",pausePlay:false,pauseText:"Pause",playText:"Play",randomize:false,slideToStart:0,animationLoop:true,pauseOnAction:true,pauseOnHover:false,controlsContainer:"",manualControls:"",start:function(){},before:function(){},after:function(){},end:function(){}};a.fn.flexslider=function(b){return this.each(function(){if(a(this).find(".slides li").length==1){a(this).find(".slides li").fadeIn(400)}else{if(a(this).data("flexslider")!=true){new a.flexslider(a(this),b)}}})}})(jQuery);
+  </script>
+  {% endif %}
+  {% if settings.enable_product_image_zoom %}
+    {{ 'jquery.zoom.js' | asset_url | script_tag }}
+  {% endif %}
+  <script type="text/javascript" async src="{{ 'jquery.fancybox.js' | asset_url }}"></script>
+  <script type="text/javascript" async src="{{ 'scripts.js' | asset_url }}"></script>
+  
+  {% if template contains 'product' %}
+  
+  <script type="text/javascript">
+  window.onload = function() {
+    if (window.jQuery) {
+      var selectCallback = function(variant, selector) {
+    
+        if (variant) {
+          if (variant.featured_image) {
+            var newImage = variant.featured_image;
+            var mainImageEl = $('.image.featured img')[0];
+            Shopify.Image.switchImage(newImage, mainImageEl, MinimalTheme.switchImage);
+          } 
+          if (variant.price < variant.compare_at_price) {
+            jQuery('#price-preview').html(Shopify.formatMoney(variant.price, "{{ shop.money_format }}") + " <del>" + Shopify.formatMoney(variant.compare_at_price, "{{ shop.money_format }}") + "</del>");
+          } 
+          else {
+            jQuery('#price-preview').html(Shopify.formatMoney(variant.price, "{{ shop.money_format }}"));
+          }
+          if (variant.available) {
+            jQuery('#add-to-cart').removeAttr('disabled').removeClass('disabled').val('Add to cart'); 
+          } 
+          else {
+            jQuery('#add-to-cart').val('Sold Out').addClass('disabled').attr('disabled', 'disabled');
+          }
+        }
+        else {
+          jQuery('#add-to-cart').val('Unavailable').addClass('disabled').attr('disabled', 'disabled');
+        }
+    
+      };
+  
+  
+  
+    jQuery(document).ready(function($){
+      
+      $('.full-text').hide();
+
+      $('.read-more').click(function (event) {
+          event.preventDefault();
+          $('.full-text').slideToggle('slow');
+          $(this).text($(this).text() == 'Read less...' ? 'Read more...' : 'Read less...');
+      });
+      
+      var optionSelectors = new Shopify.OptionSelectors("product-select", { product: {{ product | json }}, onVariantSelected: selectCallback, enableHistoryState: true });
+      
+      // Add label if only one product option and it isn't 'Title'.
+      {% if product.options.size == 1 and product.options.first != 'Title' %}
+        $('.selector-wrapper:eq(0)').prepend('<label>{{ product.options.first }}</label>');
+      {% endif %}
+    
+      Shopify.Image.preload({{ product.images | json }}, 'master'); 
+      Shopify.Image.preload({{ product.images | json }}, '1024x1024');
+
+    });
+  }
+  
+  var count = $('.bold_option_set select').length; 
+  
+  
+  $( ".btn:contains('Complete subscription')" ).addClass('hide');
+  $( "<a href='#' class='btn disabled-button'>Complete subscription</a>" ).insertAfter( ".btn:contains('Complete subscription')" );
+
+  $('body').on('click', '.disabled-button', function(e) {
+    e.preventDefault();
+    alert("Please select your flavors!");
+  });
+  
+  $('body').on('click', '.bold-ro.bold_active .frequency_div label', function(e) {
+    e.preventDefault();
+  });
+  $('.bold-ro.bold_active .frequency_div input:checkbox').hide();
+  
+  var emptyCount = count;
+  
+  $('.bold_option_set select').each(function(index, element) {
+    
+    $(this).change(function() {
+     
+      if(!$(element).val()) {
+        emptyCount++;
+        $( ".btn:contains('Complete subscription')" ).addClass('hide');
+        $('.disabled-button').show();
+      }
+      else {
+        if(emptyCount != 0) {
+          emptyCount--;
+          if(emptyCount == 0) {
+            $( ".btn:contains('Complete subscription')" ).removeClass('hide');
+            $( ".btn:contains('Complete subscription')" ).css('display', 'inline-block');
+            $('.disabled-button').hide();
+          }
+        }
+      }
+    })
+  });
+}
+   
+  
+       
+  </script>
+  
+  {% endif %}
+  
+  <script type="text/javascript">
+    {% if page.url == '/pages/newsletter' %}
+    $('.wrapper#transparency').hide();
+    {% endif %}
+  </script>
+  
+  <!--script src="../assets/clock.js" type="text/javascript" charset="utf-8"></script-->
+  
+  <script type="text/javascript">
+  
+  
+  var revealModal = function(video) {
+    // var link = video;
+    // document.getElementById('videoIframe').src = 'https://player.vimeo.com/video/' + link;
+    document.getElementById('modal-bg').style.display = 'block';
+    document.getElementById('videoModal').style.display = 'block';
+  }
+  
+  var closeModal = function() {
+    document.getElementById('modal-bg').style.display = 'none';
+    var modal = document.getElementById('videoModal');
+    modal.style.display = 'none';
+    stopVideo(modal);
+  }
+  
+  var stopVideo = function ( element ) {
+      var iframe = element.querySelector( 'iframe');
+      var video = element.querySelector( 'video' );
+      if ( iframe !== null ) {
+          var iframeSrc = iframe.src;
+          iframe.src = iframeSrc;
+      }
+      if ( video !== null ) {
+          video.pause();
+      }
+  };
+  
+  </script>
+  {% if template == "product" %}
+    {{ 'unlimited-options.js' | asset_url | script_tag }}
+    <script>
+    $(window).load(function() {
+      $('.prepaid_checkbox').prop( "checked", true );
+      $('.prepaid_length_div').show();
+    });
+    </script>
+  {% endif %}
+    
+  
+  {% if page.url == "/pages/subscriptions" %}
+  <script type="text/javascript">
+    // Subscription - Direct User to Correct Product
+
+    var buttonUrl = "";
+    var months = "";
+    var pouches = "";
+
+    // Select Number of Months
+    $('.step.one a.option').click(function(e) {
+      e.preventDefault();
+      $('.step.one a.option').removeClass('selected');
+      $(this).toggleClass('selected');
+      months = $(this).attr('id');
+    });
+    
+    // Select Number of Pouches
+    $('.step.two a.option').click(function(e) {
+      e.preventDefault();
+      $('.step.two a.option').removeClass('selected');
+      $(this).toggleClass('selected');
+      pouches = $(this).attr('id');
+    });
+    
+    $('#flavors-button').click(function(e) {
+      if (months === "") {
+        alert("You need to select a number of months!");
+        e.preventDefault();
+      }
+      else if (pouches === "") {
+        alert("You need to select a number of pouches!");
+        e.preventDefault();
+      }
+      else {
+        $(this).attr("href", "/products/" + months + "-subscription-" + pouches + "-sent-monthly");
+      }
+    });
+    
+    $('[data-toggle="tooltip"]').tooltip(); 
+  </script>
+  {% endif %}
+  
+  {% include 'subscription-theme-footer' %}
+</body>
+</html>

@@ -1,0 +1,64 @@
+<div class="flyout" style="display: none;">
+        <ul class="clearfix">
+          {% for link in linklists.main-menu.links %}
+          {% if linklists[link.handle] == empty %}
+          <li>
+            <a href="{{ link.url }}" class="{% if link.active %} current{% endif %} navlink"><span>{{ link.title }}</span></a>
+          </li>
+          {% else %}
+          <li>
+            <a href="{{ link.url }}" class="{% if link.active %} current{% endif %} navlink"><span>{{ link.title }}</span></a>    
+            <span class="more"><i class="fa fa-plus"></i></span>
+            <ul class="sub-menu">
+              {% for l in linklists[link.handle].links %}
+              <li><a href="{{ l.url }}" class="{% if l.active %}current {% endif %}{% if forloop.last %} last {% endif %} navlink">{{ l.title }}</a></li>
+              {% endfor %}
+            </ul>
+          </li>
+          {% endif %}
+          {% endfor %}
+          <li>
+            <li class="search-field">
+            <form class="search" action="/search">
+              <button type="submit" class="go"><i class="fa fa-search"></i></button>
+              <input type="text" name="q" class="search_box" placeholder="Search" value="{{ search.terms }}" />
+            </form>
+          </li>
+        </ul>
+        <ul class="secondary-menu">
+      {% for link in linklists.top-menu.links %}
+      {% if linklists[link.handle] == empty %}
+      <li>
+        <a href="https://cdn.shopify.com/s/files/1/1529/9669/t/5/assets/productRequest_v2.pdf" target="_blank">Product Request Form</a>
+      </li>
+      <li>
+        <a href="{{ link.url }}" class="{% if link.active %} current{% endif %} navlink"><span>{{ link.title }}</span></a>
+      </li>
+      {% else %}
+      <li>
+        <a href="{{ link.url }}" class="{% if link.active %} current{% endif %} navlink"><span>{{ link.title }}</span></a>    
+        <span class="more"><i class="fa fa-plus"></i></span>
+        <ul class="sub-menu">
+          {% for l in linklists[link.handle].links %}
+          <li><a href="{{ l.url }}" class="{% if l.active %}current {% endif %}{% if forloop.last %} last {% endif %} navlink">{{ l.title }}</a></li>
+          {% endfor %}
+        </ul>
+      </li>
+      {% endif %}
+      {% endfor %}
+      <li>
+        <a href="https://cdn.shopify.com/s/files/1/1529/9669/t/5/assets/productRequest_v2.pdf" class="navlink" target="_blank">Product Request Form</a>
+      </li>
+      {% if shop.customer_accounts_enabled %}
+        {% if customer  %}
+          <li><a href="/account" class="navlink">Your Account</a></li>
+          <li><a href="/account/logout" class="navlink">Logout</a></li>
+        {% else %}
+          <li>{{ 'Log in' | customer_login_link }}</li>
+          {% if shop.customer_accounts_optional %}
+          <li>{{ 'Create an account' | customer_register_link }}</li>
+          {% endif %}
+        {% endif %}
+      {% endif %}
+        </ul>
+      </div>

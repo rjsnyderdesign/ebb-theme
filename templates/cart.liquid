@@ -1,0 +1,225 @@
+{% include 'bold-cart' %}
+<div id="cart">
+  
+  <!-- Begin empty cart -->
+  {% if cart.item_count == 0 %}
+  <div class="row">
+    <div class="span12 expanded-message">
+      <h1>Your cart is empty</h1>
+      <p>Oh no your cart seems to be empty! Click the button below to continue shopping. If you are having issues please don't hesitate to send us an email at <a href="mailto:bonebroth@att.net">bonebroth@att.net</a>, we would be more than happy to help.</p>
+      <a href="/collections/premium-bone-broth" class="btn">Continue Shopping</a>
+    </div>
+  </div>
+  
+  <!-- Standard Recipe -->
+      <!-- Start for loop to go through collections -->
+      {% for collection in collections %}
+        {% if collection.title == 'Premium Bone Broth' or collection.title == 'Merchandise' %}
+    
+        <!-- End sort collection -->
+          <div class="span12">
+            <h2 class="collection-title w-line-middle mb0"><span>{{ collection.title }}</span></h2>
+            {% if collection.title == 'Premium Bone Broth' %}
+            <p class="subtitle"><b>Buy our premium bone broth by the pouch, in a 3 pack, or 6 pack!</b></p>
+            {% endif %}
+          </div>
+          <!-- Begin collection description -->
+          <div class="span12">
+            {% if collection.description != "" %}
+              {{ collection.description }}
+            {% endif %}
+          </div>
+          <!-- End collection description -->
+      
+  
+        <!-- End collection info -->
+  
+          <!-- Begin no products -->
+        {% if collection.products.size == 0 %}
+        <div class="row">
+          <div class="span12 expanded-message">
+            <p>No products found</p>
+          </div>
+        </div>
+        {% endif %}
+  
+        <div class="row products">
+          {% for product in collection.products %}
+          {% include 'product-loop' with collection.handle %}
+          {% endfor %}
+        </div>
+        {% endif %}
+      
+      {% endfor %}
+  
+  <!-- End empty cart -->
+  
+  <!-- Begin cart -->
+  {% else %}
+  
+  <div class="row">
+    
+    <div class="span12">
+      <div class="mb20 clearfix">
+        <a href="/collections/premium-bone-broth" class="btn grey pull-right">Continue Shopping</a>
+      </div>
+      <h1 class="p0">Your cart</h1>    
+
+      <form action="/cart" method="post" id="cartform">
+        <table>
+          <thead>
+            <tr>
+              <th class="image">&nbsp;</th>
+              <th class="item">&nbsp;</th>
+              <th class="qty">Qty</th>
+              <th class="price">Price</th>
+              <th class="remove">&nbsp;</th>
+            </tr>
+          </thead>
+          <tbody>
+            <script>mixed_cart = false;</script>
+            {% for item in cart.items %}
+            {% include 'bold-cart-item' with item %}
+            
+            
+            {% include 'bold-ro-price-fix' %}
+            {% assign prod_index = forloop.index0 %}
+            <input type="hidden" name="product_id[{{ forloop.index0 }}]" value="{{ item.product.id }}">
+            <input type="hidden" name="variant_id[{{ forloop.index0 }}]" value="{{ item.variant.id }}">
+            <input type="hidden" name="quantity[{{ forloop.index0 }}]" value="{{ item.quantity }}">
+            <tr class="{{ bold_row_class }}" {{ bold_row_data }}>
+              <td class="image">
+                <div class="product_image">
+                  <a href="{{ item.url }}">
+                    <img src="{{ item | img_url: 'small' }}"  alt="{{ item.title | escape }}" />
+                  </a>
+                </div>
+              </td>
+              <td class="item">
+                <a href="{{ item.url }}">
+                  <strong>{{ item.product.title }}</strong>
+                  {% if item.product.variants.size > 1 %}
+                  <span class="variant_title">{{ item.variant.title }}</span>
+                  {% endif %}
+                </a>
+                
+                <span class="Bold-theme-hook-DO-NOT-DELETE bold_cart_item_properties" style="display:none !important;">
+                  
+                  {% for p in item.properties %}
+				{% if p.first.first == '_' %}{% continue %}{% endif %}
+                  {% unless p.last == blank %}
+                  <br /><i>{{p.first}}</i>: {{ p.last }}
+                  {% endunless %} 
+                  {% endfor %}
+                </span>
+                
+                <!-- Bold Properties -->
+                {{ bold_item_properties }}  
+
+                <!-- bold-ro-liquid -->
+                {% if item.properties.frequency_num %}
+                <script>mixed_cart = true;</script>
+                <br>
+                <span class="bold_ro_every">Every</span>
+                <input type="hidden" name="{{ prod_index }}[number]" value="{{ item.properties.frequency_num }}" />
+                <span class="bold_ro_frequency_num">{{ item.properties.frequency_num }}</span>
+                {% endif %}
+                {% if item.properties.frequency_type %}
+                <input type="hidden" name="{{ prod_index }}[type_id]" value="{{ item.properties.frequency_type }}" />
+                {% endif %}
+                {% if item.properties.frequency_type_text %}
+                <span class="bold_ro_frequency_type_text">{{ item.properties.frequency_type_text }}</span>
+                {% endif %}
+                {% if item.properties.group_id %}
+                <input type="hidden" name="{{ prod_index }}[group_id]" value="{{ item.properties.group_id }}" />
+                {% endif %}
+                {% if item.properties._ro_unformatted_price %}
+                <br><span class="bold_ro_discounted_price">Discounted Price</span>
+                <span class="discounted_price_in_cart">{{ item.properties._ro_unformatted_price | money }}</span> <span class="bold_ro_each">each</span>
+                {% endif %}
+                <!-- bold-ro-liquid -->
+
+              </td>
+              <td class="qty">
+                <input type="text" size="4" name="updates[]" id="updates_{{ item.id }}" value="{{ item.quantity }}" onfocus="this.select();" class="tc item-quantity {{ bold_qty_class }}" {{ bold_qty_attr }} />
+              </td>
+              <td class="price"><span class="Bold-theme-hook-DO-NOT-DELETE bold_cart_item_total" style="display:none !important;"></span>{{ ro_line_item_price | money }}</td>
+              <td class="remove"><a href="/cart/change?line={{ forloop.index }}&quantity=0" class="cart bold-ro-remove">Remove</a></td>
+              <!--td class="remove"><a href="/cart/change?line={{ forloop.index }}&quantity=0" class="cart">Remove</a></td-->
+              
+            </tr>
+            {% endfor %}
+            <tr class="summary">
+              <td class="image">&nbsp;</td>
+              <td>&nbsp;</td>
+              <td>&nbsp;</td>
+              <td class="price"><span class="total"><strong><span class="Bold-theme-hook-DO-NOT-DELETE bold_cart_total" style="display:none !important;"></span>{{ ro_cart_total | money }}</strong></span></td>
+              <td>&nbsp;</td>
+            </tr>
+            <input name="shopify_customer_id" type="hidden" value="{{ customer.id }}" > 
+            <input name="email" type="hidden" value="{{ customer.email }}" > 
+            <input name="address1" type="hidden" value="{{ customer.default_address.address1 }}" > 
+            <input name="address2" type="hidden" value="{{ customer.default_address.address2 }}" > 
+            <input name="city" type="hidden" value="{{ customer.default_address.city }}" > 
+            <input name="company" type="hidden" value="{{ customer.default_address.company }}" > 
+            <input name="country" type="hidden" value="{{ customer.default_address.country }}" > 
+            <input name="first_name" type="hidden" value="{{ customer.default_address.first_name }}" > 
+            <input name="last_name" type="hidden" value="{{ customer.default_address.last_name }}" > 
+            <input name="phone" type="hidden" value="{{ customer.default_address.phone }}" > 
+            <input name="province" type="hidden" value="{{ customer.default_address.province }}" > 
+            <input name="zip" type="hidden" value="{{ customer.default_address.zip }}" >
+            {% include 'bold-ro-cart' %}
+          </tbody>
+        </table>
+        
+        <div class="buttons clearfix">
+          <input type="submit" id="checkout" class="btn" name="checkout" value="Secure Checkout" />
+          <input type="submit" id="update-cart" class="btn" name="update" value="Update" />
+        </div>
+        
+        {% if additional_checkout_buttons or settings.display_cart_note %}
+        {% comment %}
+        <span class="additional-checkout-buttons">
+              <div id="additional-checkout-buttons">
+                  <span>{{ 'cart.label.other_payment_types' | t }}</span>
+                  {{ content_for_additional_checkout_buttons }}
+              </div>   
+        	</span>
+          {% endcomment %}
+        <div class="row">
+          {% if additional_checkout_buttons %}
+          <div class="extra-checkout-buttons span6">            
+            {{ content_for_additional_checkout_buttons }}
+          </div>
+          {% endif %}
+          {% if settings.display_cart_note %}
+          <div class="span6">
+            <div class="checkout-buttons clearfix">
+              <label for="note">Add special instructions for your order...</label>
+              <textarea id="note" name="note" rows="10" cols="50">{{ cart.note }}</textarea>
+            </div>
+          </div>
+          {% endif %}
+        </div> 
+        {% endif %}
+        {% endif %}
+
+      </form>
+    </div>
+
+    {% if cart.item_count == 0 %}
+    {% unless settings.featured_products == blank or collections[settings.featured_products].empty? %}
+    <div class="cart-featured">
+      <h3 class="featured-cart-title">Featured Items</h3>
+      {% for product in collections[settings.featured_products].products limit: 4 %}
+      {% include 'product-loop' %}
+      {% endfor %}
+    </div>
+    {% endunless %}
+    {% endif %}
+    
+    {% include 'subscription-cart-footer' %}
+
+  </div>
+  <!-- End cart -->
+</div>

@@ -1,0 +1,193 @@
+{% include 'bold-product' with product, hide_action: 'break' %}{% if bold_hidden_product %}{% break %}{%endif %}
+{% include 'bold-product' with product, hide_action: 'break' %}
+<!--div class="alert shipping">Due to high volumes please expect shipping delays</div-->
+
+          <div id="product" class="{{ product.handle }}" itemscope itemtype="http://schema.org/Product">
+            <meta itemprop="url" content="{{ shop.url }}{{ product.url }}" />
+            <meta itemprop="image" content="{{ product.featured_image.src | product_img_url: 'grande' }}" />
+ 
+            <div class="row clearfix">
+    
+              <!-- Begin breadcrumb -->
+              <div class="span12">
+                <div class="breadcrumb clearfix">
+                  <span itemscope itemtype="http://data-vocabulary.org/Breadcrumb"><a href="/collections/premium-bone-broth" title="Shop - All Erie Bone Broth Products" itemprop="url"><span itemprop="title">Shop</span></a></span> 
+                  <span class="arrow-space">&#62;</span>
+                  <span itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+                  {% if collection %}
+                    <a href="{{ collection.url }}" title="{{ collection.title | escape }}" itemprop="url">
+                      <span itemprop="title">{{ collection.title }}</span>
+                    </a>
+                  {% else %}
+                    <a href="/pages/subscriptions" title="All Products" itemprop="url">
+                      <span itemprop="title">Subscriptions</span>
+                    </a>
+                  {% endif %}
+                  </span>
+                  <span class="arrow-space">&#62;</span>
+                  <strong>{{ product.title }}</strong>
+                </div>
+              </div>
+              <!-- End breadcrumb -->
+              <!-- Begin product photos -->
+              <div class="{% if product.images.size == 1 or settings.thumbnails_position == 'below' %}span6{% else %}span5{% endif %}">
+      
+                {% assign featured_image = product.selected_or_first_available_variant.featured_image | default: product.featured_image %}
+                <!-- Begin featured image -->
+                <div class="image featured">
+                  {% if settings.enable_product_image_zoom %}
+                  <img src="{{ featured_image | img_url: '1024x1024' }}" alt="{{ featured_image.alt | escape }}" />
+                  {% else if product.images.size == 1 %}
+                  <img class="with-border" src="{{ featured_image | img_url: '1024x1024' }}" alt="{{ featured_image.alt | escape }}" />
+                  {% else %}
+                  <a href="{{ featured_image | img_url: 'master' }}" class="fancy" id="placeholder">
+                    <img src="{{ featured_image | img_url: '1024x1024' }}" alt="{{ featured_image.alt | escape }}" />
+                  </a>
+                  {% endif %}
+                </div>
+                <!-- End product image -->
+      
+                {% if product.images.size > 1 and settings.thumbnails_position == 'below' %}
+                <!-- Begin thumbnails -->
+                <div class="thumbs clearfix" style="margin-left:-15px;">
+                  {% for image in product.images %}
+                  <div class="image span2{% cycle 'last-in-row': '', '', ' last-in-row' %}">
+                    <a href="{{ image | img_url: '1024x1024' }}">
+                      <img src="{{ image | img_url: 'large' }}" alt="{{ image.alt | escape }}" />
+                    </a>
+                  </div>
+                  {% endfor %}
+                </div>
+                <!-- End thumbnails -->
+                {% endif %}
+      
+              </div>
+              <!-- End product photos -->
+    
+              {% if product.images.size > 1 and settings.thumbnails_position == 'right' %}
+              <!-- Begin thumbnails -->
+              <div class="span1">
+                <div class="thumbs clearfix">
+                  {% for image in product.images %}
+                  <div class="image">
+                    <a href="{{ image | product_img_url: '1024x1024' }}">
+                      <img src="{{ image | product_img_url: 'compact' }}" alt="{{ image.alt | escape }}" />
+                    </a>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+              <!-- End thumbnails -->
+              {% endif %}
+    
+    
+              <!-- Begin description -->
+              <div class="span6">
+      
+                <h1 class="title" itemprop="name">{{ product.title }}</h1>
+                {% if collection.id == 27266311 %}
+                <p class="subtitle" style="color: #B6ADAF;"><b>Buy our Premium Bone Broths online by the jar, in a 3 pack, or buy them by the case!</b></p>
+                {% endif %}
+                <div class="description">
+                  {{ product.description }}
+                </div>
+                
+                {% comment %}
+                {% if product.tags contains "Subscription" %}
+                  <p class="alert">If you would like a different combination of flavors please <a href="/pages/subscriptions-help">Contact Us</a> and we will create a custom order for you!</p>
+                {% endif %}
+                
+                {% endcomment %}
+                
+      
+                <div class="purchase" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+                  <meta itemprop="priceCurrency" content="{{ shop.currency }}" />
+                  {% if product.available %}
+                  <link itemprop="availability" href="http://schema.org/InStock" />
+                  {% else %}
+                  <link itemprop="availability" href="http://schema.org/OutOfStock" />
+                  {% endif %}
+        
+                </div>
+      
+                {% assign hide_default_title = false %}
+                {% if product.variants.size == 1 and product.variants.first.title contains 'Default' %}
+                  {% assign hide_default_title = true %}
+                {% endif %}
+            
+                <form id="add-item-form" action="/cart/add" method="post" enctype="multipart/form-data" class="variants clearfix shappify_add_to_cart_form" data-productid="{{product.id}}">
+                  {% if product.available %}{% include 'subscription-product' %}{% endif %}
+        
+                  <!-- Begin product options -->
+                  <div class="product-options">
+                    <!-- Bold: Options 4-2 -->
+                    {% comment %} BOLD Options V1 Automatically Removed {% include 'shappify-options' %} {% endcomment %}
+                    <!-- // end Options 4-2 -->
+
+                    <div class="select clearfix"{% if hide_default_title %} style="display:none"{% endif %}>
+                      <select id="product-select" name="id" style="display:none"  data-productid="{{product.id}}">
+                        {% for variant in product.variants %}
+                        <option {% if variant == product.selected_or_first_available_variant %} selected="selected" {% endif %} value="{{ variant.id }}" data-price="{{ variant.price | money_without_currency | remove: ','}}">{{ variant.title }} - {{ variant.price | money }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    
+
+          
+                    {% if settings.display_quantity_dropdown and product.available %}
+                   <!-- REMOVE <div class="selector-wrapper">
+                      <label>Quantity</label-->
+                      <input id="quantity" type="hidden" name="quantity" value="1" class="tc item-quantity" />
+                   <!-- </div>-->
+                    {% endif %}
+          
+                    <div class="purchase-section{% if product.variants.size > 1 %} multiple{% endif %}">
+                      <div class="purchase">
+                        {% assign variant = product.selected_or_first_available_variant %}
+                        <h2 class="price" id="price-preview">
+                          <span itemprop="price">{{ variant.price | money }}</span>{% if variant.price < variant.compare_at_price %} <del>{{ variant.compare_at_price | money }}</del>{% endif %}
+                        </h2>
+
+                        <input name="shopify_customer_id" type="hidden" value="{{ customer.id }}" > 
+                        <input name="email" type="hidden" value="{{ customer.email }}" > 
+                        <input name="address1" type="hidden" value="{{ customer.default_address.address1 }}" > 
+                        <input name="address2" type="hidden" value="{{ customer.default_address.address2 }}" > 
+                        <input name="city" type="hidden" value="{{ customer.default_address.city }}" > 
+                        <input name="company" type="hidden" value="{{ customer.default_address.company }}" > 
+                        <input name="country" type="hidden" value="{{ customer.default_address.country }}" > 
+                        <input name="first_name" type="hidden" value="{{ customer.default_address.first_name }}" > 
+                        <input name="last_name" type="hidden" value="{{ customer.default_address.last_name }}" > 
+                        <input name="phone" type="hidden" value="{{ customer.default_address.phone }}" > 
+                        <input name="province" type="hidden" value="{{ customer.default_address.province }}" > 
+                        <input name="zip" type="hidden" value="{{ customer.default_address.zip }}" >
+                        {% include 'bold-ro' with product %}
+                        
+                        <input type="submit" id="add-to-cart" class="btn addtocart" name="add" value="Add to cart" />
+                        <!-- bold-ro-liquid --> <div class="bold_add_to_orders" style="display: inline-block;"> </div> <!-- bold-ro-liquid -->
+                      </div>
+                    </div>
+          
+                  </div>
+                  <!-- End product options -->
+        
+                </form>
+      
+      
+                <!-- Begin social buttons -->
+                <h3>Share Our Broth!</h3>
+                <div class="social">
+                  {% include 'addthis' %}
+                </div>
+                <!-- End social buttons -->
+    
+              </div>
+              <!-- End description -->
+   
+            </div>
+  
+            <!-- Begin related product -->
+            {% if settings.show_related_products %}
+              {% include 'related-products' %}
+            {% endif %}
+  
+          </div>
